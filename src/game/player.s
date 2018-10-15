@@ -9,7 +9,8 @@
 .global draw_player
 .type draw_player, @function
 draw_player:
-    # Warning: no stackframe
+    SUB_PROLOGUE
+
 	mov $VGA_ADDR, %r8
 	mov $SHIP_VGA, %r9
 
@@ -55,4 +56,6 @@ loopx_end:
 	inc %r12
 	jmp loopy
 loopy_end:
+
+    SUB_EPILOGUE
     ret

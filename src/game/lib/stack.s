@@ -1,6 +1,10 @@
 ###
  #  Stack frame macros
  ##
+
+.ifndef STACK_S__
+.equ STACK_S__, 1
+
 .macro SUB_PROLOGUE
     push %r15
     push %r14
@@ -36,3 +40,5 @@
     pop %rcx
     pop %rax
 .endm
+
+.endif
