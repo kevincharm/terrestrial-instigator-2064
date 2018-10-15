@@ -26,10 +26,10 @@ DOCKER_SH=docker run -it --rm \
 
 .PHONY: clean all _all kvm qemu
 
-_all: out/bootloader out/kernel
-
 all:
 	$(DOCKER_SH) "make _all"
+
+_all: out/bootloader out/kernel
 
 out/bootloader: out/boot.o src/bootloader/link_boot.ld | HD_img
 	$(LD) -nostdlib -T src/bootloader/link_boot.ld -o $@ out/boot.o
