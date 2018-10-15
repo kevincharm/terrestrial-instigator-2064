@@ -24,7 +24,7 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 .global gameLoop
 
 .section .game.data
-.equ VGA_MEM, 0xA000
+.equ VGA_MEM, 0xA0000
 
 .section .game.text
 
@@ -33,9 +33,9 @@ gameInit:
 
 	# test draw
 	mov $VGA_MEM, %rdi
-	movb $1, (%rdi)
-	movb $1, 2(%rdi)
-	movb $1, 4(%rdi)
+	movb $5, (%rdi)
+	movb $10, 4(%rdi)
+	movb $15, 8(%rdi)
 
 	SUB_EPILOGUE
 	ret
