@@ -6,8 +6,8 @@
 .equ PLAYER_MOVE_UNIT, 8
 
 .section .game.data
-PLAYER_X: .quad 0
-PLAYER_Y: .quad 0
+PLAYER_X: .quad ((VGA_WIDTH / 2) - (PLAYER_WIDTH / 2))
+PLAYER_Y: .quad (VGA_HEIGHT - PLAYER_HEIGHT)
 
 .section .game.text
 # void render_player(char key);
