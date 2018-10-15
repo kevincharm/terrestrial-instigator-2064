@@ -29,7 +29,7 @@ SECTIONS {
 		_system_end = .;
 	}
 
-	. = ASSERT(_system_end <= 0x20000,"Load more kernel pages from disk (and then change this error)");
+	. = ASSERT(_system_end <= 0x100000,"Real mode disk sector load limit reached. Load more sectors in PM/LM. (=1MiB)");
 	. = ASSERT(_system_end <= 0x78400,"System initialization section too big! (>480 KB)");
 
 	/DISCARD/ : {
