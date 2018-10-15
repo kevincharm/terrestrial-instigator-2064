@@ -20,7 +20,6 @@ draw_player:
     mov (SHIP_VGA_WIDTH), %rcx
     sub $PLAYER_WIDTH, %rcx
     sub $PLAYER_IDLE_OFFSET_X, %rcx     # increment sprite pointer by rcx after rendering a row
-    mov $32, %rcx
 
     mov %rsi, %rax
     imul $VGA_WIDTH, %rax
@@ -40,7 +39,10 @@ loopx:
 
     # When rendering a row, just copy & increment sequentially
 	mov (%r9), %al
+    cmp $36, %al
+    je loopx_skip                       # check transparent pixel
 	mov %al, (%r8)
+loopx_skip:
     inc %r9
 	inc %r8
 
