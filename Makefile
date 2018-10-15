@@ -24,6 +24,11 @@ DOCKER_SH=docker run -it --rm \
 	--security-opt seccomp=unconfined \
 	$(DOCKER_IMAGE) /bin/bash -c
 
+KERNEL_SRCS=\
+	src/kernel/*.s \
+	src/game/*.s \
+	src/game/assets/**/*.s
+
 .PHONY: clean all _all kvm qemu
 
 all:
@@ -42,20 +47,21 @@ out/kernel: out/kernel.o src/kernel/link_kernel.ld | HD_img
 out/boot.o: src/bootloader/*.s | out
 	$(AS) src/bootloader/*.s -o $@
 
-out/kernel.o: src/kernel/*.s src/game/*.s | out
-	$(AS) src/kernel/*.s src/game/*.s -o $@
+out/kernel.o: $(KERNEL_SRCS) | out
+	$(AS) $(KERNEL_SRCS) -o $@
+
+%.s: %.bmp
+	node tools/img2s.js $<
 
 HD_img:
 	dd if=/dev/zero of=$@ count=512
 
-qemu: all
-	qemu-system-x86_64 HD_img
+QEMU=qemu-system-x86_64
+run: all
+	$(QEMU) HD_img
 
-kvm: all
-	qemu-system-x86_64 -enable-kvm -cpu host HD_img
-
-bochs: all
-	bochs
+debug: all
+	$(QEMU) -s -S HD_img
 
 out:
 	mkdir out
@@ -63,3 +69,4 @@ out:
 clean:
 	rm -f HD_img
 	rm -rf out
+	find src/game/assets -type f -name '*.s' -delete

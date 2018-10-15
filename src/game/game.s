@@ -17,16 +17,23 @@ You should have received a copy of the GNU General Public License
 along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 */
 
+.include "src/game/lib/stack.s"
 .file "src/game/game.s"
 
 .global gameInit
 .global gameLoop
 
 .section .game.data
+FMTSTR: .asciz "%u\n"
 
 .section .game.text
 
 gameInit:
+	SUB_PROLOGUE
+	mov $5, %rdi
+	mov $5, %rsi
+	call draw_player
+	SUB_EPILOGUE
 	ret
 
 gameLoop:
