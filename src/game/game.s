@@ -17,16 +17,27 @@ You should have received a copy of the GNU General Public License
 along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 */
 
+.include "src/game/lib/stack.s"
 .file "src/game/game.s"
 
 .global gameInit
 .global gameLoop
 
 .section .game.data
+.equ VGA_MEM, 0xA000
 
 .section .game.text
 
 gameInit:
+	SUB_PROLOGUE
+
+	# test draw
+	mov $VGA_MEM, %rdi
+	movb $1, (%rdi)
+	movb $1, 2(%rdi)
+	movb $1, 4(%rdi)
+
+	SUB_EPILOGUE
 	ret
 
 gameLoop:

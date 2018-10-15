@@ -191,7 +191,11 @@ parttwo16:
 	or		$1, %eax
 	mov		%eax, %cr0
 
-	# TODO
+	# Not so fast! Switch mode 13h before jumping to protected mode.
+	mov $0, %ah
+	mov $0x13, %al
+	int $0x10
+
 	# far jump to protected code
 	ljmp	$gdt_code_segment, $_cont32prot
 	jmp		halt16
