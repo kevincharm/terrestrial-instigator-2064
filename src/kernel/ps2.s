@@ -133,15 +133,10 @@ ps2_getkey:
 	ret
 
 ps2_translate_scancode:
-	enter	$0, $0
-	push	%rax
 
 	mov		$code_set1, %rax
-	mov		(%rax, %r8, 1), %al
+	mov		(%rax, %rdi, 1), %al
 	and		$0xFF, %rax
-	mov		%rax, %r8
 
-	pop		%rax
-	leave
 	ret
 

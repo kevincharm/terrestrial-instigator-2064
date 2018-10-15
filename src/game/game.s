@@ -18,6 +18,7 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 */
 
 .include "src/game/lib/stack.s"
+.include "src/game/lib/vga.s"
 .file "src/game/game.s"
 
 .global gameInit
@@ -29,30 +30,32 @@ FMTSTR: .asciz "%u\n"
 .section .game.text
 
 gameInit:
-	SUB_PROLOGUE
-	mov $5, %rdi
-	mov $5, %rsi
-	call draw_player
-	SUB_EPILOGUE
 	ret
 
 gameLoop:
+	SUB_PROLOGUE
+
+	call clear_screen
+
 	# Check if a key has been pressed
-	call	readKeyCode
-	cmpq	$0, %rax
-	je		1f
-	# If so, print a 'Y'
-	movb	$'Y', %dl
-	jmp		2f
+	call readKeyCode
+	cmp $0, %rax
+	mov %rax, %rdi
+	call ps2_translate_scancode
+	mov %rax, %rdi
+	call render_player
 
-1:
-	# Otherwise, print a 'N'
-	movb	$'N', %dl
+	SUB_EPILOGUE
+	ret
 
-2:
-	movq	$0, %rdi
-	movq	$0, %rsi
-	movb	$0x0f, %cl
-	call	putChar
-
+clear_screen:
+	mov $VGA_ADDR, %rdi
+	mov $(VGA_WIDTH * VGA_HEIGHT / 8), %rcx
+cls_loop:
+	test %rcx, %rcx
+	jz cls_loop_end
+	movq $0, (%rdi, %rcx, 8)
+	dec %rcx
+	jmp cls_loop
+cls_loop_end:
 	ret

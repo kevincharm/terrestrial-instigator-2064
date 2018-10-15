@@ -1,13 +1,56 @@
 .include "src/game/lib/vga.s"
 
-.section .game.data
 .equ PLAYER_IDLE_OFFSET_X, (2 * 16)
 .equ PLAYER_HEIGHT, 24
 .equ PLAYER_WIDTH, 16
+.equ PLAYER_MOVE_UNIT, 8
+
+.section .game.data
+PLAYER_X: .quad 0
+PLAYER_Y: .quad 0
+
+.section .game.text
+# void render_player(char key);
+.global render_player
+.type render_player, @function
+render_player:
+    SUB_PROLOGUE
+
+    # check if a move key was pressed
+chk_move_up:
+    cmp $'w', %di
+    jne chk_move_down
+    cmpq $0, (PLAYER_Y)
+    je chk_move_done                    # max(0, y)
+    subq $PLAYER_MOVE_UNIT, (PLAYER_Y)
+chk_move_down:
+    cmp $'s', %di
+    jne chk_move_left
+    cmpq $(VGA_HEIGHT - PLAYER_HEIGHT), (PLAYER_Y)
+    je chk_move_done                    # min(VGA_HEIGHT - PLAYER_HEIGHT, x)
+    addq $PLAYER_MOVE_UNIT, (PLAYER_Y)
+chk_move_left:
+    cmp $'a', %di
+    jne chk_move_right
+    cmpq $0, (PLAYER_X)
+    je chk_move_done                    # max(0, x)
+    subq $PLAYER_MOVE_UNIT, (PLAYER_X)
+chk_move_right:
+    cmp $'d', %di
+    jne chk_move_done
+    cmpq $(VGA_WIDTH - PLAYER_WIDTH), (PLAYER_X)
+    je chk_move_done                    # min(VGA_WIDTH - PLAYER_WIDTH, x)
+    addq $PLAYER_MOVE_UNIT, (PLAYER_X)
+chk_move_done:
+
+    mov (PLAYER_X), %rdi
+    mov (PLAYER_Y), %rsi
+    call draw_player
+
+    SUB_EPILOGUE
+    ret
 
 # void draw_player(int x, int y);
-.global draw_player
-.type draw_player, @function
 draw_player:
     SUB_PROLOGUE
 
