@@ -30,8 +30,8 @@ FMTSTR: .asciz "%u\n"
 
 gameInit:
 	SUB_PROLOGUE
-	xor %rdi, %rdi
-	xor %rsi, %rsi
+	mov $5, %rdi
+	mov $5, %rsi
 	call draw_player
 	SUB_EPILOGUE
 	ret

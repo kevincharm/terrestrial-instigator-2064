@@ -14,6 +14,7 @@ draw_player:
 	mov $SHIP_VGA, %r9
 
 	mov $VGA_WIDTH, %rdx
+    sub %rdi, %rdx                      # minus x
 	sub $PLAYER_WIDTH, %rdx			    # increment vga pointer by rdx after rendering a row
 
     mov (SHIP_VGA_WIDTH), %rcx
@@ -21,12 +22,17 @@ draw_player:
     sub $PLAYER_IDLE_OFFSET_X, %rcx     # increment sprite pointer by rcx after rendering a row
     mov $32, %rcx
 
+    mov %rsi, %rax
+    imul $VGA_WIDTH, %rax
+    add %rax, %r8                       # increment vga pointer by (y * vga_row_width)
+
 	xor %r12, %r12
 loopy:
 	cmp $PLAYER_HEIGHT, %r12
 	je loopy_end
 
-    add $PLAYER_IDLE_OFFSET_X, %r9         # advance sprite pointer by x offset per row
+    add %rdi, %r8                          # advance vga pointer by x pos per row
+    add $PLAYER_IDLE_OFFSET_X, %r9         # advance sprite pointer by sprite_offset_x per row
 	xor %r13, %r13
 loopx:
 	cmp $PLAYER_WIDTH, %r13
