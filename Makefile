@@ -63,3 +63,10 @@ out:
 clean:
 	rm -f HD_img
 	rm -rf out
+
+# ASSETS
+ASSETS=\
+	src/game/assets/player/ship_vga.bmp
+
+assets: $(ASSETS)
+	node tools/img2s.js $<
