@@ -4,10 +4,12 @@
 .equ PLAYER_HEIGHT, 24
 .equ PLAYER_WIDTH, 16
 .equ PLAYER_MOVE_UNIT, 8
+.equ PLAYER_ANIM_PERIOD, 10
 
 .section .game.data
 PLAYER_X: .quad ((VGA_WIDTH / 2) - (PLAYER_WIDTH / 2))
 PLAYER_Y: .quad (VGA_HEIGHT - PLAYER_HEIGHT)
+PLAYER_ANIM_COUNTER: .byte PLAYER_ANIM_PERIOD
 
 .section .game.text
 # void render_player(char key);
@@ -54,6 +56,22 @@ chk_move_done:
 draw_player:
     SUB_PROLOGUE
 
+    mov (PLAYER_ANIM_COUNTER), %al
+    dec %al
+    test %al, %al
+    jz p_anim_reset
+    cmp $(PLAYER_ANIM_PERIOD / 2), %al
+    jl p_anim_toggle
+    jmp p_anim_done
+p_anim_toggle:
+    mov $1, %r11
+    jmp p_anim_done
+p_anim_reset:
+    xor %r11, %r11
+    mov $PLAYER_ANIM_PERIOD, %al
+p_anim_done:
+    mov %al, (PLAYER_ANIM_COUNTER)
+
 	mov $VGA_ADDR, %r8
 	mov $SHIP_VGA, %r9
 
@@ -68,6 +86,13 @@ draw_player:
     mov %rsi, %rax
     imul $VGA_WIDTH, %rax
     add %rax, %r8                       # increment vga pointer by (y * vga_row_width)
+
+    test %r11, %r11
+    jz sprite_ptr_y_off_done
+    mov (SHIP_VGA_WIDTH), %rax
+    imul $PLAYER_HEIGHT, %rax
+    add %rax, %r9
+sprite_ptr_y_off_done:
 
 	xor %r12, %r12
 loopy:
