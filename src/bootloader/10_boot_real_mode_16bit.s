@@ -118,13 +118,13 @@ _start_cont:
 	cmp		$0, %ah			# check result code
 
 	# read kernel sector(s)
-	# reads go to es:bx, so set those first:
 	mov $15, %di
+	mov		$kernel_addr, %ax
 read_more:
 	test %di, %di
 	jz		parttwo16
-	mov		$kernel_addr, %ax
-	mov		%ax, %es
+	push	%ax
+	mov		%ax, %es		# read destination is es:bx
 	mov		$0, %bx
 	mov		$2, %ah			# 2 == read
 	mov		$128, %al		# sectors to read: 128 * 512B = 65536B (0x10000)
@@ -135,6 +135,8 @@ read_more:
 	int		$0x13			# do it
 	cmp		$0, %ah			# check result code
 	jnz		disk_read_err
+	pop 	%ax
+	add		$0x1000, %ax	# 1 sector read is 0x1000*16 so increment the next read dest addr
 	dec %di
 	jmp read_more
 
