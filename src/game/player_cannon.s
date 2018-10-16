@@ -8,7 +8,7 @@
 #       u16 x
 #       u16 y
 #   }
-.equ PLAYER_CANNONS_LEN, (4 * 20)
+.equ PLAYER_CANNONS_LEN, (4 * 10)
 .equ PLAYER_CANNON_UNUSED, 0xffffffff
 PLAYER_CANNONS: .skip PLAYER_CANNONS_LEN
 
@@ -39,6 +39,16 @@ fire_player_cannon:
 
     mov $PLAYER_CANNONS, %rbx
     xor %rcx, %rcx
+find_free_block:
+    # we're incrementing by 2*2 bytes each
+    # scale of 2 is being used for index %rcx
+    cmp $(PLAYER_CANNONS_LEN / 4), %rcx
+    je fire_abort                   # no free blocks
+    cmpl $PLAYER_CANNON_UNUSED, (%rbx, %rcx, 2)
+    je found_free_block
+    add $2, %rcx
+    jmp find_free_block
+found_free_block:
     # prep rax for loading x, y
     xor %rax, %rax
     mov (PLAYER_X), %ax
@@ -46,6 +56,8 @@ fire_player_cannon:
     mov (PLAYER_Y), %ax
     mov %ax, 2(%rbx, %rcx, 2)       # y -> msb
 
+fire_abort:
+    # fail silently ( # Y O L O )
     SUB_EPILOGUE
     ret
 
@@ -56,6 +68,11 @@ render_player_cannon:
 
     mov $PLAYER_CANNONS, %r12
     xor %rcx, %rcx
+for_each_cannon:
+    # we're incrementing by 2*2 bytes each
+    # scale of 2 is being used for index %rcx
+    cmp $(PLAYER_CANNONS_LEN / 4), %rcx
+    je for_each_cannon_end
     # prep rax for x, y
     xor %rax, %rax
     mov (%r12, %rcx, 2), %ax        # x -> ax
@@ -64,7 +81,7 @@ render_player_cannon:
     xor %rbx, %rbx
     mov 2(%r12, %rcx, 2), %bx       # y -> bx
     cmp $0, %bx
-    jle move_done
+    jle free_cannon
     # y--
     dec %bx
     # update the new y value in the cannon array
@@ -72,7 +89,13 @@ render_player_cannon:
     mov %rax, %rdi
     mov %rbx, %rsi
     call draw_cannon
+    jmp move_done
+free_cannon:
+    movl $PLAYER_CANNON_UNUSED, (%r12, %rcx, 2)
 move_done:
+    add $2, %rcx
+    jmp for_each_cannon
+for_each_cannon_end:
 
     SUB_EPILOGUE
     ret
