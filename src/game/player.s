@@ -7,7 +7,9 @@
 .equ PLAYER_ANIM_PERIOD, 10
 
 .section .game.data
+.global PLAYER_X
 PLAYER_X: .quad ((VGA_WIDTH / 2) - (PLAYER_WIDTH / 2))
+.global PLAYER_Y
 PLAYER_Y: .quad (VGA_HEIGHT - PLAYER_HEIGHT)
 PLAYER_ANIM_COUNTER: .byte PLAYER_ANIM_PERIOD
 
@@ -39,10 +41,14 @@ chk_move_left:
     subq $PLAYER_MOVE_UNIT, (PLAYER_X)
 chk_move_right:
     cmp $'d', %di
-    jne chk_move_done
+    jne chk_move_fire
     cmpq $(VGA_WIDTH - PLAYER_WIDTH), (PLAYER_X)
     je chk_move_done                    # min(VGA_WIDTH - PLAYER_WIDTH, x)
     addq $PLAYER_MOVE_UNIT, (PLAYER_X)
+chk_move_fire:
+    cmp $'e', %di
+    jne chk_move_done
+    call fire_player_cannon
 chk_move_done:
 
     mov (PLAYER_X), %rdi

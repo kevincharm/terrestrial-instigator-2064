@@ -1,3 +1,4 @@
+.include "src/game/lib/vga.s"
 .include "src/game/lib/stack.s"
 .file "src/game/player_cannon.s"
 
@@ -36,7 +37,55 @@ cl_cannon_loop_end:
 fire_player_cannon:
     SUB_PROLOGUE
 
-    //
+    mov $PLAYER_CANNONS, %rbx
+    xor %rcx, %rcx
+    # prep rax for loading x, y
+    xor %rax, %rax
+    mov (PLAYER_X), %ax
+    mov %ax, (%rbx, %rcx, 2)        # x -> lsb
+    mov (PLAYER_Y), %ax
+    mov %ax, 2(%rbx, %rcx, 2)       # y -> msb
+
+    SUB_EPILOGUE
+    ret
+
+.global render_player_cannon
+.type render_player_cannon, @function
+render_player_cannon:
+    SUB_PROLOGUE
+
+    mov $PLAYER_CANNONS, %r12
+    xor %rcx, %rcx
+    # prep rax for x, y
+    xor %rax, %rax
+    mov (%r12, %rcx, 2), %ax        # x -> ax
+    cmp $0xffff, %ax
+    je move_done
+    xor %rbx, %rbx
+    mov 2(%r12, %rcx, 2), %bx       # y -> bx
+    cmp $0, %bx
+    jle move_done
+    # y--
+    dec %bx
+    # update the new y value in the cannon array
+    mov %bx, 2(%r12, %rcx, 2)
+    mov %rax, %rdi
+    mov %rbx, %rsi
+    call draw_cannon
+move_done:
+
+    SUB_EPILOGUE
+    ret
+
+# void draw_cannon(int x, int y)
+draw_cannon:
+    SUB_PROLOGUE
+
+    mov $VGA_ADDR, %r8
+    mov %rsi, %rax
+    imul $VGA_WIDTH, %rax
+    add %rdi, %rax                  # rax = y*vga_width + x
+    movb $10, (%r8, %rax, 1)
 
     SUB_EPILOGUE
     ret
