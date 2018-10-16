@@ -40,7 +40,7 @@ fire_player_cannon:
     mov $PLAYER_CANNONS, %rbx
     xor %rcx, %rcx
 find_free_block:
-    # we're incrementing by 2*2 bytes each
+    # we're incrementing by 2 bytes each time
     # scale of 2 is being used for index %rcx
     cmp $(PLAYER_CANNONS_LEN / 2), %rcx
     je fire_abort                   # no free blocks
@@ -69,7 +69,7 @@ render_player_cannon:
     mov $PLAYER_CANNONS, %r12
     xor %rcx, %rcx
 for_each_cannon:
-    # we're incrementing by 2*2 bytes each
+    # we're incrementing by 2 bytes each time
     # scale of 2 is being used for index %rcx
     cmp $(PLAYER_CANNONS_LEN / 2), %rcx
     je for_each_cannon_end
