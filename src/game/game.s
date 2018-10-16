@@ -30,6 +30,11 @@ FMTSTR: .asciz "%u\n"
 .section .game.text
 
 gameInit:
+	SUB_PROLOGUE
+
+	call init_player_cannon
+
+	SUB_EPILOGUE
 	ret
 
 gameLoop:
