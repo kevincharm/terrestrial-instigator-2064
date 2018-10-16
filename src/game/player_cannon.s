@@ -42,7 +42,7 @@ fire_player_cannon:
 find_free_block:
     # we're incrementing by 2*2 bytes each
     # scale of 2 is being used for index %rcx
-    cmp $(PLAYER_CANNONS_LEN / 4), %rcx
+    cmp $(PLAYER_CANNONS_LEN / 2), %rcx
     je fire_abort                   # no free blocks
     cmpl $PLAYER_CANNON_UNUSED, (%rbx, %rcx, 2)
     je found_free_block
@@ -71,7 +71,7 @@ render_player_cannon:
 for_each_cannon:
     # we're incrementing by 2*2 bytes each
     # scale of 2 is being used for index %rcx
-    cmp $(PLAYER_CANNONS_LEN / 4), %rcx
+    cmp $(PLAYER_CANNONS_LEN / 2), %rcx
     je for_each_cannon_end
     # prep rax for x, y
     xor %rax, %rax
@@ -108,6 +108,7 @@ draw_cannon:
     mov %rsi, %rax
     imul $VGA_WIDTH, %rax
     add %rdi, %rax                  # rax = y*vga_width + x
+    add $(PLAYER_WIDTH / 2), %rax   # center the cannon
     movb $10, (%r8, %rax, 1)
 
     SUB_EPILOGUE
