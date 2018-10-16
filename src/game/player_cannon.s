@@ -109,7 +109,7 @@ draw_cannon:
     imul $VGA_WIDTH, %rax
     add %rdi, %rax                  # rax = y*vga_width + x
     add $(PLAYER_WIDTH / 2), %rax   # center the cannon
-    movb $10, (%r8, %rax, 1)
+    movb $0x0b, (%r8, %rax, 1)
 
     SUB_EPILOGUE
     ret
