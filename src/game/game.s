@@ -30,6 +30,11 @@ FMTSTR: .asciz "%u\n"
 .section .game.text
 
 gameInit:
+	SUB_PROLOGUE
+
+	call init_player_cannon
+
+	SUB_EPILOGUE
 	ret
 
 gameLoop:
@@ -44,6 +49,7 @@ gameLoop:
 	call ps2_translate_scancode
 	mov %rax, %rdi
 	call render_player
+	call render_player_cannon
 
 	SUB_EPILOGUE
 	ret
