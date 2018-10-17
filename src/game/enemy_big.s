@@ -9,6 +9,9 @@
 #       u16 anim_counter
 #       u16 kind
 #   }
+.equ ENEMY_BIG_HEIGHT, 32
+.equ ENEMY_BIG_WIDTH, 32
+.equ ENEMY_BIG_ANIM_PERIOD, 10
 .equ ENEMIES_BIG_LEN, (8 * 1)
 .equ ENEMY_BIG_UNUSED, 0xffffffffffffffff
 ENEMIES_BIG: .skip ENEMIES_BIG_LEN
@@ -61,7 +64,7 @@ se_found_free_block:
     mov %ax, (%rbx, %rcx, 1)        # u16 x
     pop %ax                         # get 16 bits from y
     mov %ax, 2(%rbx, %rcx, 1)       # u16 y
-    movw $0, 4(%rbx, %rcx, 1)       # u16 anim_counter (init with 0)
+    movw $ENEMY_BIG_ANIM_PERIOD, 4(%rbx, %rcx, 1)       # u16 anim_counter (init with 0)
 
 se_spawn_abort:
     # fail silently ( # Y O L O )
@@ -106,10 +109,6 @@ for_each_enemy_big_end:
 
     SUB_EPILOGUE
     ret
-
-.equ ENEMY_BIG_HEIGHT, 32
-.equ ENEMY_BIG_WIDTH, 32
-.equ ENEMY_BIG_ANIM_PERIOD, 10
 
 # void draw_enemy_big(int x, int y, uint16_t *anim_counter);
 draw_enemy_big:
