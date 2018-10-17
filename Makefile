@@ -27,6 +27,7 @@ DOCKER_SH=docker run -it --rm \
 KERNEL_SRCS=\
 	src/game/assets/player/ship_vga.s \
 	src/game/assets/enemy_big/enemy_big_vga.s \
+	src/game/script/stage1.s \
 	src/game/*.s \
 	src/kernel/*.s
 

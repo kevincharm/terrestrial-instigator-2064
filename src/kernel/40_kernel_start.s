@@ -104,7 +104,8 @@ _kernel_entry_point:
 	call	gameInit
 
 	# start the periodic timer
-	mov		$19886, %rdi
+	mov		$19886, %rdi # 60 fps
+	# mov		$39772, %rdi # 30 fps
 	call	setTimer
 
 # The end (for now)

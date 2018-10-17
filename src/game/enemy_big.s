@@ -12,7 +12,7 @@
 .equ ENEMY_BIG_HEIGHT, 32
 .equ ENEMY_BIG_WIDTH, 32
 .equ ENEMY_BIG_ANIM_PERIOD, 10
-.equ ENEMIES_BIG_LEN, (8 * 1)
+.equ ENEMIES_BIG_LEN, (8 * 10)
 .equ ENEMY_BIG_UNUSED, 0xffffffffffffffff
 ENEMIES_BIG: .skip ENEMIES_BIG_LEN
 
@@ -43,8 +43,8 @@ cl_enemies_loop_end:
 spawn_enemy:
     SUB_PROLOGUE
 
-    push %rsi                       # save y
-    push %rdi                       # save x
+    mov %rdi, %r14                  # x -> r14
+    mov %rsi, %r15                  # y -> r15
 
     mov $ENEMIES_BIG, %rbx
     xor %rcx, %rcx
@@ -60,10 +60,8 @@ se_find_free_block:
 se_found_free_block:
     # prep rax for loading x, y
     xor %rax, %rax
-    pop %ax                         # get 16 bits from x
-    mov %ax, (%rbx, %rcx, 1)        # u16 x
-    pop %ax                         # get 16 bits from y
-    mov %ax, 2(%rbx, %rcx, 1)       # u16 y
+    mov %r14w, (%rbx, %rcx, 1)      # u16 x
+    mov %r15w, 2(%rbx, %rcx, 1)     # u16 y
     movw $ENEMY_BIG_ANIM_PERIOD, 4(%rbx, %rcx, 1)       # u16 anim_counter (init with 0)
 
 se_spawn_abort:
@@ -98,7 +96,9 @@ for_each_enemy_big:
     mov %bx, 2(%r12, %rcx, 1)
     mov %rax, %rdi
     mov %rbx, %rsi
+    SAVE_VOLATILE
     call draw_enemy_big
+    RESTORE_VOLATILE
     jmp reb_move_done
 reb_free_enemy:
     movq $ENEMY_BIG_UNUSED, (%r12, %rcx, 1)
@@ -135,9 +135,8 @@ deb_p_anim_done:
 	mov $VGA_ADDR, %r8
 	mov $ENEMY_BIG_VGA, %r9
 
-	mov $VGA_WIDTH, %rdx
-    sub %rdi, %rdx                      # minus x
-	sub $ENEMY_BIG_WIDTH, %rdx			    # increment vga pointer by rdx after rendering a row
+	mov $(VGA_WIDTH - ENEMY_BIG_WIDTH), %rdx
+    sub %rdi, %rdx                      # increment vga pointer by rdx after rendering a row
 
     mov (ENEMY_BIG_VGA_WIDTH), %rcx
     sub $ENEMY_BIG_WIDTH, %rcx             # increment sprite pointer by rcx after rendering a row
