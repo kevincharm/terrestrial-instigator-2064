@@ -89,7 +89,7 @@ for_each_enemy_big:
     je reb_move_done
     xor %rbx, %rbx
     mov 2(%r12, %rcx, 1), %bx       # y -> bx
-    cmp $168, %bx                   # TODO: HARD CODED VGA_HEIGHT-ENEMY_HEIGHT
+    cmp $(VGA_HEIGHT - ENEMY_BIG_HEIGHT), %bx
     jge reb_free_enemy
     lea 4(%r12, %rcx, 1), %rdx      # *anim_count -> 3rd arg for draw_enemy_big
     # y++
