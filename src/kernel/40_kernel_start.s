@@ -101,12 +101,11 @@ _kernel_entry_point:
 #	mov		$0x42424242, %rax
 #	wrmsr
 
+	call	gameInit
+
 	# start the periodic timer
 	mov		$19886, %rdi
 	call	setTimer
-
-	#call	init_gui			# last but not least: a text gui :)
-	call	gameInit
 
 # The end (for now)
 halt:

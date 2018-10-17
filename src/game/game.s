@@ -33,9 +33,7 @@ gameInit:
 	SUB_PROLOGUE
 
 	call init_player_cannon
-	mov $10, %rdi
-	mov $10, %rsi
-	# call spawn_enemy
+	call init_enemies_big
 
 	SUB_EPILOGUE
 	ret
