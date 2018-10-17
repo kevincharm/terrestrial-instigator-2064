@@ -39,24 +39,22 @@ fire_player_cannon:
 
     mov $PLAYER_CANNONS, %rbx
     xor %rcx, %rcx
-find_free_block:
-    # we're incrementing by 2 bytes each time
-    # scale of 2 is being used for index %rcx
-    cmp $(PLAYER_CANNONS_LEN / 2), %rcx
-    je fire_abort                   # no free blocks
-    cmpl $PLAYER_CANNON_UNUSED, (%rbx, %rcx, 2)
-    je found_free_block
-    add $2, %rcx
-    jmp find_free_block
-found_free_block:
+fpc_find_free_block:
+    cmp $PLAYER_CANNONS_LEN, %rcx
+    je fpc_fire_abort                   # no free blocks
+    cmpl $PLAYER_CANNON_UNUSED, (%rbx, %rcx, 1)
+    je fpc_found_free_block
+    add $4, %rcx
+    jmp fpc_find_free_block
+fpc_found_free_block:
     # prep rax for loading x, y
     xor %rax, %rax
     mov (PLAYER_X), %ax
-    mov %ax, (%rbx, %rcx, 2)        # x -> lsb
+    mov %ax, (%rbx, %rcx, 1)        # x -> lsb
     mov (PLAYER_Y), %ax
-    mov %ax, 2(%rbx, %rcx, 2)       # y -> msb
+    mov %ax, 2(%rbx, %rcx, 1)       # y -> msb
 
-fire_abort:
+fpc_fire_abort:
     # fail silently ( # Y O L O )
     SUB_EPILOGUE
     ret
@@ -69,31 +67,29 @@ render_player_cannon:
     mov $PLAYER_CANNONS, %r12
     xor %rcx, %rcx
 for_each_cannon:
-    # we're incrementing by 2 bytes each time
-    # scale of 2 is being used for index %rcx
-    cmp $(PLAYER_CANNONS_LEN / 2), %rcx
+    cmp $PLAYER_CANNONS_LEN, %rcx
     je for_each_cannon_end
     # prep rax for x, y
     xor %rax, %rax
-    mov (%r12, %rcx, 2), %ax        # x -> ax
+    mov (%r12, %rcx, 1), %ax        # x -> ax
     cmp $0xffff, %ax
     je move_done
     xor %rbx, %rbx
-    mov 2(%r12, %rcx, 2), %bx       # y -> bx
+    mov 2(%r12, %rcx, 1), %bx       # y -> bx
     cmp $0, %bx
     jle free_cannon
     # y--
     dec %bx
     # update the new y value in the cannon array
-    mov %bx, 2(%r12, %rcx, 2)
+    mov %bx, 2(%r12, %rcx, 1)
     mov %rax, %rdi
     mov %rbx, %rsi
     call draw_cannon
     jmp move_done
 free_cannon:
-    movl $PLAYER_CANNON_UNUSED, (%r12, %rcx, 2)
+    movl $PLAYER_CANNON_UNUSED, (%r12, %rcx, 1)
 move_done:
-    add $2, %rcx
+    add $4, %rcx
     jmp for_each_cannon
 for_each_cannon_end:
 
