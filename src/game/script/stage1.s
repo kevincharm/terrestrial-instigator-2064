@@ -3,6 +3,7 @@
 
 .section .game.data
 STAGE1_TIMER: .quad 0
+TESTSTR: .asciz "somebody set up us"
 
 .section .game.text
 # void render_stage1();
@@ -13,6 +14,14 @@ render_stage1:
     SUB_PROLOGUE
 
     mov (GAME_TIMER), %r12
+
+    # Text test
+    SAVE_VOLATILE
+    mov $10, %rdi
+    mov $10, %rsi
+    mov $TESTSTR, %rdx
+    call print
+    RESTORE_VOLATILE
 
     # GAME_TIMER increments at 60Hz with the render. So 1sec=60ticks
     cmp $20, %r12
