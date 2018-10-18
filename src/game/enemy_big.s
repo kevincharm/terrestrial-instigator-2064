@@ -12,7 +12,8 @@
 .equ ENEMY_BIG_HEIGHT, 32
 .equ ENEMY_BIG_WIDTH, 32
 .equ ENEMY_BIG_ANIM_PERIOD, 10
-.equ ENEMIES_BIG_LEN, (8 * 10)
+.equ ENEMIES_BIG_SIZEOF, 8
+.equ ENEMIES_BIG_LEN, (ENEMIES_BIG_SIZEOF * 10)
 .equ ENEMY_BIG_UNUSED, 0xffffffffffffffff
 ENEMIES_BIG: .skip ENEMIES_BIG_LEN
 
@@ -51,18 +52,18 @@ spawn_enemy:
 se_find_free_block:
     # we're incrementing by 2 bytes each time
     # scale of 2 is being used for index %rcx
-    cmp $ENEMIES_BIG_LEN, %rcx
+    cmp $(ENEMIES_BIG_LEN / ENEMIES_BIG_SIZEOF), %rcx
     je se_spawn_abort                   # no free blocks
-    cmpq $ENEMY_BIG_UNUSED, (%rbx, %rcx, 1)
+    cmpq $ENEMY_BIG_UNUSED, (%rbx, %rcx, 8)
     je se_found_free_block
-    add $8, %rcx
+    inc %rcx
     jmp se_find_free_block
 se_found_free_block:
     # prep rax for loading x, y
     xor %rax, %rax
-    mov %r14w, (%rbx, %rcx, 1)      # u16 x
-    mov %r15w, 2(%rbx, %rcx, 1)     # u16 y
-    movw $ENEMY_BIG_ANIM_PERIOD, 4(%rbx, %rcx, 1)       # u16 anim_counter (init with 0)
+    mov %r14w, (%rbx, %rcx, 8)      # u16 x
+    mov %r15w, 2(%rbx, %rcx, 8)     # u16 y
+    movw $ENEMY_BIG_ANIM_PERIOD, 4(%rbx, %rcx, 8)       # u16 anim_counter (init with 0)
 
 se_spawn_abort:
     # fail silently ( # Y O L O )
@@ -78,22 +79,22 @@ render_enemies_big:
     mov $ENEMIES_BIG, %r12
     xor %rcx, %rcx
 for_each_enemy_big:
-    cmp $ENEMIES_BIG_LEN, %rcx
+    cmp $(ENEMIES_BIG_LEN / ENEMIES_BIG_SIZEOF), %rcx
     je for_each_enemy_big_end
     # prep rax for x, y
     xor %rax, %rax
-    mov (%r12, %rcx, 1), %ax        # x -> ax
+    mov (%r12, %rcx, 8), %ax        # x -> ax
     cmp $0xffff, %ax
     je reb_move_done
     xor %rbx, %rbx
-    mov 2(%r12, %rcx, 1), %bx       # y -> bx
+    mov 2(%r12, %rcx, 8), %bx       # y -> bx
     cmp $(VGA_HEIGHT - ENEMY_BIG_HEIGHT), %bx
     jge reb_free_enemy
-    lea 4(%r12, %rcx, 1), %rdx      # *anim_count -> 3rd arg for draw_enemy_big
+    lea 4(%r12, %rcx, 8), %rdx      # *anim_count -> 3rd arg for draw_enemy_big
     # y++
     inc %bx
     # update the new y value in the cannon array
-    mov %bx, 2(%r12, %rcx, 1)
+    mov %bx, 2(%r12, %rcx, 8)
     mov %rax, %rdi
     mov %rbx, %rsi
     SAVE_VOLATILE
@@ -101,9 +102,9 @@ for_each_enemy_big:
     RESTORE_VOLATILE
     jmp reb_move_done
 reb_free_enemy:
-    movq $ENEMY_BIG_UNUSED, (%r12, %rcx, 1)
+    movq $ENEMY_BIG_UNUSED, (%r12, %rcx, 8)
 reb_move_done:
-    add $8, %rcx
+    inc %rcx
     jmp for_each_enemy_big
 for_each_enemy_big_end:
 

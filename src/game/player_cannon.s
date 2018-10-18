@@ -8,7 +8,8 @@
 #       u16 x
 #       u16 y
 #   }
-.equ PLAYER_CANNONS_LEN, (4 * 10)
+.equ PLAYER_CANNONS_SIZEOF, 4
+.equ PLAYER_CANNONS_LEN, (PLAYER_CANNONS_SIZEOF * 10)
 .equ PLAYER_CANNON_UNUSED, 0xffffffff
 PLAYER_CANNONS: .skip PLAYER_CANNONS_LEN
 
@@ -40,19 +41,19 @@ fire_player_cannon:
     mov $PLAYER_CANNONS, %rbx
     xor %rcx, %rcx
 fpc_find_free_block:
-    cmp $PLAYER_CANNONS_LEN, %rcx
+    cmp $(PLAYER_CANNONS_LEN / PLAYER_CANNONS_SIZEOF), %rcx
     je fpc_fire_abort                   # no free blocks
-    cmpl $PLAYER_CANNON_UNUSED, (%rbx, %rcx, 1)
+    cmpl $PLAYER_CANNON_UNUSED, (%rbx, %rcx, 4)
     je fpc_found_free_block
-    add $4, %rcx
+    inc %rcx
     jmp fpc_find_free_block
 fpc_found_free_block:
     # prep rax for loading x, y
     xor %rax, %rax
     mov (PLAYER_X), %ax
-    mov %ax, (%rbx, %rcx, 1)        # x -> lsb
+    mov %ax, (%rbx, %rcx, 4)        # x -> lsb
     mov (PLAYER_Y), %ax
-    mov %ax, 2(%rbx, %rcx, 1)       # y -> msb
+    mov %ax, 2(%rbx, %rcx, 4)       # y -> msb
 
 fpc_fire_abort:
     # fail silently ( # Y O L O )
@@ -67,29 +68,29 @@ render_player_cannon:
     mov $PLAYER_CANNONS, %r12
     xor %rcx, %rcx
 for_each_cannon:
-    cmp $PLAYER_CANNONS_LEN, %rcx
+    cmp $(PLAYER_CANNONS_LEN / PLAYER_CANNONS_SIZEOF), %rcx
     je for_each_cannon_end
     # prep rax for x, y
     xor %rax, %rax
-    mov (%r12, %rcx, 1), %ax        # x -> ax
+    mov (%r12, %rcx, 4), %ax        # x -> ax
     cmp $0xffff, %ax
     je move_done
     xor %rbx, %rbx
-    mov 2(%r12, %rcx, 1), %bx       # y -> bx
+    mov 2(%r12, %rcx, 4), %bx       # y -> bx
     cmp $0, %bx
     jle free_cannon
     # y--
     dec %bx
     # update the new y value in the cannon array
-    mov %bx, 2(%r12, %rcx, 1)
+    mov %bx, 2(%r12, %rcx, 4)
     mov %rax, %rdi
     mov %rbx, %rsi
     call draw_cannon
     jmp move_done
 free_cannon:
-    movl $PLAYER_CANNON_UNUSED, (%r12, %rcx, 1)
+    movl $PLAYER_CANNON_UNUSED, (%r12, %rcx, 4)
 move_done:
-    add $4, %rcx
+    inc %rcx
     jmp for_each_cannon
 for_each_cannon_end:
 
