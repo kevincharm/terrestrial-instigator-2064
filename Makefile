@@ -25,10 +25,15 @@ DOCKER_SH=docker run -it --rm \
 	$(DOCKER_IMAGE) /bin/bash -c
 
 KERNEL_SRCS=\
+	src/game/assets/font/font_vga.s \
 	src/game/assets/player/ship_vga.s \
 	src/game/assets/enemy_big/enemy_big_vga.s \
+	src/game/player.s \
+	src/game/player_cannon.s \
+	src/game/enemy_big.s \
+	src/game/text.s \
 	src/game/script/stage1.s \
-	src/game/*.s \
+	src/game/game.s \
 	src/kernel/*.s
 
 .PHONY: clean all _all kvm qemu

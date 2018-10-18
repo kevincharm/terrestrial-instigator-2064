@@ -1,4 +1,6 @@
 .include "src/game/lib/vga.s"
+.include "src/game/lib/stack.s"
+.file "src/game/player.s"
 
 .equ PLAYER_IDLE_OFFSET_X, (2 * 16)
 .equ PLAYER_HEIGHT, 24
