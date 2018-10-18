@@ -71,9 +71,9 @@ for_each_cannon:
     cmp $(PLAYER_CANNONS_LEN / PLAYER_CANNONS_SIZEOF), %rcx
     je for_each_cannon_end
     # prep rax for x, y
-    xor %rax, %rax
-    mov (%r12, %rcx, 4), %ax        # x -> ax
-    cmp $0xffff, %ax
+    xor %r15, %r15
+    mov (%r12, %rcx, 4), %r15w        # x -> r15w
+    cmp $0xffff, %r15w
     je move_done
     xor %rbx, %rbx
     mov 2(%r12, %rcx, 4), %bx       # y -> bx
@@ -83,9 +83,15 @@ for_each_cannon:
     dec %bx
     # update the new y value in the cannon array
     mov %bx, 2(%r12, %rcx, 4)
-    mov %rax, %rdi
+    SAVE_VOLATILE                   # we're using rcx as counter, a volatile reg
+    mov %r15, %rdi
     mov %rbx, %rsi
     call draw_cannon
+    mov %r15, %rdi
+    mov %rbx, %rsi
+    mov %rcx, %rdx
+    call intersect_enemy
+    RESTORE_VOLATILE
     jmp move_done
 free_cannon:
     movl $PLAYER_CANNON_UNUSED, (%r12, %rcx, 4)
@@ -93,6 +99,58 @@ move_done:
     inc %rcx
     jmp for_each_cannon
 for_each_cannon_end:
+
+    SUB_EPILOGUE
+    ret
+
+# void intersect_enemy(int x, int y)
+intersect_enemy:
+    SUB_PROLOGUE
+
+    mov $ENEMIES_BIG, %r12
+    xor %r13, %r13
+ie_each_enemy:
+    cmp $(ENEMIES_BIG_LEN / ENEMIES_BIG_SIZEOF), %r13
+    je ie_each_enemy_end
+
+    # check for intersection with each enemy
+    # cannon.x -> rdi
+    # cannon.y -> rsi
+    # cannon_i -> rdx
+    # enemy.x -> ax
+    xor %rax, %rax
+    mov (%r12, %r13, 8), %ax
+    # abort if unallocated
+    cmp $0xffff, %ax
+    je ie_no_intersect
+    # enemy.y -> r15w
+    xor %r15, %r15
+    mov 2(%r12, %r13, 8), %r15w
+    # all conditions must be met for intersection
+    # abort if cannon.x < enemy.x
+    cmp %rax, %rdi
+    jl ie_no_intersect
+    # abort if cannon.x > enemy.x + ENEMY_BIG_WIDTH
+    add $ENEMY_BIG_WIDTH, %rax
+    cmp %rax, %rdi
+    jg ie_no_intersect
+    # abort if cannon.y < enemy.y
+    cmp %r15, %rsi
+    jl ie_no_intersect
+    # abort if cannon.y > enemy.y + ENEMY_BIG_HEIGHT
+    add $ENEMY_BIG_HEIGHT, %r15
+    cmp %r15, %rsi
+    jg ie_no_intersect
+    # at this point, we know that cannon intersects enemy, so free both
+    mov $PLAYER_CANNONS, %rax
+    movl $PLAYER_CANNON_UNUSED, (%rax, %rdx, 4)
+    mov $ENEMIES_BIG, %rax
+    movq $ENEMY_BIG_UNUSED, (%rax, %r13, 8)
+ie_no_intersect:
+
+    inc %r13
+    jmp ie_each_enemy
+ie_each_enemy_end:
 
     SUB_EPILOGUE
     ret
