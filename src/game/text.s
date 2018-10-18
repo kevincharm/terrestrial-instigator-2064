@@ -1,7 +1,7 @@
 .include "src/game/lib/stack.s"
 
-.equ FONT_HEIGHT, 16
-.equ FONT_WIDTH, 12
+.equ FONT_HEIGHT, 8
+.equ FONT_WIDTH, 8
 
 .section .game.text
 # void print(int x, int y, char *str);
@@ -24,7 +24,7 @@ p_char:
     RESTORE_VOLATILE
 
     # next char will be x+16
-    add $16, %rdi
+    add $FONT_WIDTH, %rdi
     inc %rdx
     jmp p_char
 p_char_end:

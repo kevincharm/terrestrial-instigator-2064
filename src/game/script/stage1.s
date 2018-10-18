@@ -3,7 +3,7 @@
 
 .section .game.data
 STAGE1_TIMER: .quad 0
-TESTSTR: .asciz "somebody set up us"
+TESTSTR: .asciz "We're under attack!"
 
 .section .game.text
 # void render_stage1();
@@ -17,8 +17,8 @@ render_stage1:
 
     # Text test
     SAVE_VOLATILE
-    mov $10, %rdi
-    mov $10, %rsi
+    mov $80, %rdi
+    mov $150, %rsi
     mov $TESTSTR, %rdx
     call print
     RESTORE_VOLATILE
