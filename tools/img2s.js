@@ -18,8 +18,20 @@ function main() {
         const width = bmp.readInt32LE(18)
         const height = bmp.readInt32LE(22)
         const pixels = bmp.slice(dataOffset, dataOffset + width * height)
+        /*
         const pixelsHex = Array.from(pixels)
-            .reverse() // BMPs are stored upside down lol
+            .reverse()
+            .join(',')
+        */
+
+        const pxs = Array.from(pixels)
+        const rows = []
+        for (let i = 0; i < height; i++) {
+            rows.push(pxs.slice(i * width, i * width + width).reverse())
+        }
+        const pixelsHex = rows
+            .reduce((p, c) => p.concat(c))
+            .reverse()
             .join(',')
 
         const generated =
