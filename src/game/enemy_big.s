@@ -16,12 +16,19 @@
 .equ ENEMIES_BIG_LEN, (ENEMIES_BIG_SIZEOF * 10)
 .equ ENEMY_BIG_UNUSED, 0xffffffffffffffff
 ENEMIES_BIG: .skip ENEMIES_BIG_LEN
+.equ ENEMY_SPEED_PERIOD_INITIAL, 1
+ENEMY_SPEED_PERIOD: .quad 0
+ENEMY_SPEED_COUNTER: .quad 0
 
 .section .game.text
 .global init_enemies_big
 .type init_enemies_big, @function
 init_enemies_big:
     SUB_PROLOGUE
+
+    # clear the speed counter
+    movq $4, (ENEMY_SPEED_PERIOD)
+    movq $0, (ENEMY_SPEED_COUNTER)
 
     # clear the cannons array (fill with 0xff)
     xor %rcx, %rcx
@@ -76,6 +83,18 @@ se_spawn_abort:
 render_enemies_big:
     SUB_PROLOGUE
 
+    xor %r14, %r14
+    movq (ENEMY_SPEED_COUNTER), %r15
+    test %r15, %r15
+    jz 1f
+    dec %r15
+    movq %r15, (ENEMY_SPEED_COUNTER)
+    jmp 2f
+1:
+    inc %r14
+    movq $ENEMY_SPEED_PERIOD_INITIAL, (ENEMY_SPEED_COUNTER)
+2:
+
     mov $ENEMIES_BIG, %r12
     xor %rcx, %rcx
 for_each_enemy_big:
@@ -91,8 +110,8 @@ for_each_enemy_big:
     cmp $(VGA_HEIGHT - ENEMY_BIG_HEIGHT), %bx
     jge reb_free_enemy
     lea 4(%r12, %rcx, 8), %rdx      # *anim_count -> 3rd arg for draw_enemy_big
-    # y++
-    inc %bx
+    # y++ if period reached
+    add %r14w, %bx
     # update the new y value in the cannon array
     mov %bx, 2(%r12, %rcx, 8)
     mov %rax, %rdi

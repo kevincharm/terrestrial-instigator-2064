@@ -16,6 +16,8 @@ render_stage1:
 
     # GAME_TIMER increments at 60Hz with the render. So 1sec=60ticks
     cmp $20, %r12
+    je s1_spawn_mid
+    cmp $50, %r12
     je s1_spawn_two
 
     # No matches
