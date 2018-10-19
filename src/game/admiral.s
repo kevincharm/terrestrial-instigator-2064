@@ -1,5 +1,30 @@
 .include "src/game/lib/stack.s"
 .section .game.text
+# void dialog_admiral(const char *line1, const char *line2);
+.global dialog_admiral
+dialog_admiral:
+    SUB_PROLOGUE
+
+    push %rsi
+    push %rdi
+
+    call draw_admiral
+    mov $30, %rdi
+    mov $135, %rsi
+    mov $SPEAKER_ADMIRAL, %rdx
+    call print
+    mov $30, %rdi
+    mov $150, %rsi
+    pop %rdx
+    call print
+    mov $30, %rdi
+    mov $160, %rsi
+    pop %rdx
+    call print
+
+    SUB_EPILOGUE
+    ret
+
 .global draw_admiral
 draw_admiral:
     SUB_PROLOGUE
