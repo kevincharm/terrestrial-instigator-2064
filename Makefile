@@ -24,10 +24,14 @@ DOCKER_SH=docker run -it --rm \
 	--security-opt seccomp=unconfined \
 	$(DOCKER_IMAGE) /bin/bash -c
 
+	#src/game/admiral.s
+	#src/game/assets/admiral/admiral_vga.s
 KERNEL_SRCS=\
+	src/game/assets/captain_jenkins/captain_jenkins_vga.s \
 	src/game/assets/font/font_vga.s \
 	src/game/assets/player/ship_vga.s \
 	src/game/assets/enemy_big/enemy_big_vga.s \
+	src/game/captain.s \
 	src/game/player.s \
 	src/game/player_cannon.s \
 	src/game/enemy_big.s \
@@ -61,7 +65,7 @@ out/kernel.o: $(KERNEL_SRCS) | out
 	node tools/img2s.js $<
 
 HD_img:
-	dd if=/dev/zero of=$@ count=512
+	dd if=/dev/zero of=$@ count=1024
 
 QEMU=qemu-system-x86_64
 run: all
