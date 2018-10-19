@@ -89,3 +89,61 @@ putc_y_end:
 
     SUB_EPILOGUE
     ret
+
+# void print_num(int x, int y, uint64_t num)
+.global print_num
+print_num:
+    SUB_PROLOGUE
+
+    mov %rdi, %rbx
+    mov %rsi, %r13
+
+    # number -> string
+    # rdx:rax / rcx
+    xor %r14, %r14
+    mov %rdx, %rax
+next_rem:
+    xor %rdx, %rdx
+    mov $10, %rcx
+    div %rcx
+    push %rdx
+    inc %r14
+    test %rax, %rax
+    jnz next_rem
+    test %rdx, %rdx
+    jnz next_rem
+no_more_digits:
+
+    pop %rax
+    test %rax, %rax
+    jz leading_zero
+not_leading_zero:
+    push %rax
+    jmp digits_rdy
+leading_zero:
+    cmp $1, %r14
+    je not_leading_zero # the entire number is zero
+    dec %r14
+digits_rdy:
+    # print the digits in the correct order
+    xor %r15, %r15
+print_digits:
+    test %r14, %r14
+    jz print_digits_end
+
+    # figure out the x pos
+    mov %r15, %rdi
+    imul $8, %rdi
+    add %rbx, %rdi
+    mov %r13, %rsi
+    pop %rdx
+    add $0x30, %rdx
+    call putc
+
+    dec %r14
+    inc %r15
+    jmp print_digits
+print_digits_end:
+
+    SUB_EPILOGUE
+    ret
