@@ -65,7 +65,7 @@ out/kernel.o: $(KERNEL_SRCS) | out
 	node tools/img2s.js $<
 
 HD_img:
-	dd if=/dev/zero of=$@ count=1024
+	dd if=/dev/zero of=$@ count=512
 
 QEMU=qemu-system-x86_64
 run: all
