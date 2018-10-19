@@ -5,7 +5,7 @@
 S0_TITLE: .asciz "TERRESTRIAL INSTIGATOR"
 S0_AUTHOR: .asciz "@kevincharm"
 S0_CONTROLS_WASD: .asciz "* w,a,s,d to move"
-S0_CONTROLS_E: .asciz "* e to shoot lazerssssss"
+S0_CONTROLS_E: .asciz "* space to shoot lazerssssss"
 S0_CONTROLS_START: .asciz "* press any key to start"
 
 .section .game.text
