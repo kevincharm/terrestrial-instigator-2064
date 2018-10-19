@@ -52,6 +52,7 @@ gameLoop:
 
 	# stages
 	call render_stage0_title_screen
+	call render_stage0_intro
 	call render_stage1
 
 	# increment the game timer at 60Hz

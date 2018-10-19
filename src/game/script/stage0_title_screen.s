@@ -23,8 +23,8 @@ render_stage0_title_screen:
 	cmp $0, %rax
     je render_s0
     # at this point, a key was pressed. so start the game!
-    movq $10, (GAME_STAGE)
     movq $0, (GAME_TIMER)
+    movq $9, (GAME_STAGE)
 
 render_s0:
     mov $76, %rdi
