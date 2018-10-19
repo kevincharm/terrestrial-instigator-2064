@@ -29,6 +29,8 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 GAME_TIMER: .quad 0
 .global GAME_STAGE
 GAME_STAGE: .quad 0
+.global GAME_SCORE
+GAME_SCORE: .quad 0
 
 .section .game.text
 
@@ -37,6 +39,7 @@ gameInit:
 
 	movq $0, (GAME_TIMER)
 	movq $0, (GAME_STAGE)
+	movq $0, (GAME_SCORE)
 
 	call init_player_cannon
 	call init_enemies_big

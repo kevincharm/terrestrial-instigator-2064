@@ -59,6 +59,7 @@ render_stage1:
 	call render_player
 	call render_enemies_big
 	call render_player_cannon
+    call render_score
 
     mov (GAME_TIMER), %r12
     cmp $(1 * DIALOG_PERIOD), %r12

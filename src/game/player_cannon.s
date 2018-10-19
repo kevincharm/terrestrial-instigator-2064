@@ -146,6 +146,8 @@ ie_each_enemy:
     movl $PLAYER_CANNON_UNUSED, (%rax, %rdx, 4)
     mov $ENEMIES_BIG, %rax
     movq $ENEMY_BIG_UNUSED, (%rax, %r13, 8)
+    # give the player a point, she deserves it!
+    incq (GAME_SCORE)
 ie_no_intersect:
 
     inc %r13
