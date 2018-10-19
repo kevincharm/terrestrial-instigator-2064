@@ -4,7 +4,7 @@
 draw_admiral:
     SUB_PROLOGUE
 
-    mov $0, %rdi
+    mov $220, %rdi
     mov $70, %rsi
 
 	mov $VGA_ADDR, %r8

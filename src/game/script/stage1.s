@@ -28,21 +28,20 @@ render_stage1:
 s1_dialog1:
     SAVE_VOLATILE
     call draw_admiral
-    mov $110, %rdi
+    mov $30, %rdi
     mov $135, %rsi
     mov $SPEAKER_ADMIRAL, %rdx
     call print
-    mov $110, %rdi
+    mov $30, %rdi
     mov $150, %rsi
     mov $DIALOG1_1, %rdx
     call print
-    mov $110, %rdi
+    mov $30, %rdi
     mov $160, %rsi
     mov $DIALOG1_2, %rdx
     call print
     RESTORE_VOLATILE
     jmp s1_dialog_end
-
 
 s1_dialog2:
     SAVE_VOLATILE
