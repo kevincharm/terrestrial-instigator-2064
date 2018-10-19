@@ -60,10 +60,6 @@ gameLoop:
 
 	# increment the game timer at 60Hz
 	incq (GAME_TIMER)
-	cmpq $600, (GAME_TIMER)
-	jl 3f
-	movq $0, (GAME_TIMER)
-3:
 
 	SUB_EPILOGUE
 	ret
