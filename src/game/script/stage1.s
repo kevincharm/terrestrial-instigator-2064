@@ -68,7 +68,7 @@ render_stage1:
     jl s1_dialog9
     cmp $(10 * DIALOG_PERIOD), %r12
     jl s1_dialog10
-    jmp s1_spawn_start
+    jmp s1_dialog_end
 
 s1_dialog1:
     mov $DIALOG1_1, %rdi
@@ -131,17 +131,15 @@ s1_dialog10:
     jmp s1_dialog_end
 
 s1_dialog_end:
-    jmp s1_end
 
-s1_spawn_start:
     # GAME_TIMER increments at 60Hz with the render. So 1sec=60ticks
-    cmp $20, %r12
+    cmp $(11 * DIALOG_PERIOD), %r12
     je s1_spawn_mid
-    cmp $50, %r12
+    cmp $(12 * DIALOG_PERIOD), %r12
     je s1_spawn_two
-    cmp $120, %r12
+    cmp $(13 * DIALOG_PERIOD), %r12
     je s1_spawn_mid
-    cmp $150, %r12
+    cmp $(14 * DIALOG_PERIOD), %r12
     je s1_spawn_mid
 
     # No matches
