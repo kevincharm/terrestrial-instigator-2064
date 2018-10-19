@@ -36,6 +36,7 @@ KERNEL_SRCS=\
 	src/game/player_cannon.s \
 	src/game/enemy_big.s \
 	src/game/text.s \
+	src/game/script/stage0_title_screen.s \
 	src/game/script/stage1.s \
 	src/game/game.s \
 	src/kernel/*.s

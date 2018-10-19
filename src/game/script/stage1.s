@@ -47,6 +47,19 @@ DIALOG10_2 = DIALOG_EMPTY
 render_stage1:
     SUB_PROLOGUE
 
+    mov (GAME_STAGE), %r12
+    cmp $10, %r12
+    jne s1_end
+
+    # Check if a key has been pressed
+	call readKeyCode
+	mov %rax, %rdi
+	call ps2_translate_scancode
+	mov %rax, %rdi
+	call render_player
+	call render_enemies_big
+	call render_player_cannon
+
     mov (GAME_TIMER), %r12
     cmp $(1 * DIALOG_PERIOD), %r12
     jl s1_dialog1
