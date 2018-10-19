@@ -26,8 +26,6 @@ render_stage1:
     jmp s1_dialog_end
 
 s1_dialog1:
-    #jmp s1_dialog_end # debug
-
     SAVE_VOLATILE
     call draw_admiral
     mov $110, %rdi

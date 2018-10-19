@@ -130,22 +130,7 @@ _start_cont:
 	mov		boot_disk, %dl	# from the boot_disk
 	int		$0x13			# do it
 	cmp		$0, %ah
-	jz		parttwo16
-
-	# read kernel sectors part 2
-	# reads go to es:bx, so set those first:
-	mov		$(kernel_addr * 2), %ax
-	mov		%ax, %es
-	mov		$0, %bx
-	mov		$2, %ah			# 2 == read
-	mov		$63, %al			# sectors to read	TODO
-	mov		$0, %ch			# cylinder 0
-	mov		$146, %cl		# sector 18 where kernel starts
-	mov		$0, %dh			# head 0
-	mov		boot_disk, %dl	# from the boot_disk
-	int		$0x13			# do it
-	cmp		$0, %ah			# check result code
-	jz		parttwo16
+	jz parttwo16
 
 disk_read_err:
 	push	$disk_read_fail
