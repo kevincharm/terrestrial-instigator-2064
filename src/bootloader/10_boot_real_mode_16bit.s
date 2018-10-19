@@ -118,27 +118,34 @@ _start_cont:
 	cmp		$0, %ah			# check result code
 
 	# read kernel sector(s)
-	mov $15, %di
+	# reads go to es:bx, so set those first:
 	mov		$kernel_addr, %ax
-read_more:
-	test %di, %di
-	jz		parttwo16
-	push	%ax
-	mov		%ax, %es		# read destination is es:bx
+	mov		%ax, %es
 	mov		$0, %bx
 	mov		$2, %ah			# 2 == read
-	mov		$128, %al		# sectors to read: 128 * 512B = 65536B (0x10000)
+	mov		$128, %al		# sectors to read	TODO
 	mov		$0, %ch			# cylinder 0
 	mov		$18, %cl		# sector 18 where kernel starts
 	mov		$0, %dh			# head 0
 	mov		boot_disk, %dl	# from the boot_disk
 	int		$0x13			# do it
+	cmp		$0, %ah
+	jz		parttwo16
+
+	# read kernel sectors part 2
+	# reads go to es:bx, so set those first:
+	mov		$(kernel_addr * 2), %ax
+	mov		%ax, %es
+	mov		$0, %bx
+	mov		$2, %ah			# 2 == read
+	mov		$63, %al			# sectors to read	TODO
+	mov		$0, %ch			# cylinder 0
+	mov		$146, %cl		# sector 18 where kernel starts
+	mov		$0, %dh			# head 0
+	mov		boot_disk, %dl	# from the boot_disk
+	int		$0x13			# do it
 	cmp		$0, %ah			# check result code
-	jnz		disk_read_err
-	pop 	%ax
-	add		$0x1000, %ax	# 1 sector read is 0x1000*16 so increment the next read dest addr
-	dec %di
-	jmp read_more
+	jz		parttwo16
 
 disk_read_err:
 	push	$disk_read_fail

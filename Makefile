@@ -24,9 +24,9 @@ DOCKER_SH=docker run -it --rm \
 	--security-opt seccomp=unconfined \
 	$(DOCKER_IMAGE) /bin/bash -c
 
-	#src/game/admiral.s
-	#src/game/assets/admiral/admiral_vga.s
 KERNEL_SRCS=\
+	src/game/admiral.s \
+	src/game/assets/admiral/admiral_vga.s \
 	src/game/assets/captain_jenkins/captain_jenkins_vga.s \
 	src/game/assets/font/font_vga.s \
 	src/game/assets/player/ship_vga.s \
