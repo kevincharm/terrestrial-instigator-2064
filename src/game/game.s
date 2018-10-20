@@ -27,6 +27,12 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 .section .game.data
 .global GAME_TIMER
 GAME_TIMER: .quad 0
+.global GAME_STAGE
+GAME_STAGE: .quad 0
+.global GAME_SCORE
+GAME_SCORE: .quad 0
+.global HIGH_SCORE
+HIGH_SCORE: .quad 0
 
 .section .game.text
 
@@ -34,6 +40,8 @@ gameInit:
 	SUB_PROLOGUE
 
 	movq $0, (GAME_TIMER)
+	movq $0, (GAME_STAGE)
+	movq $0, (GAME_SCORE)
 
 	call init_player_cannon
 	call init_enemies_big
@@ -47,23 +55,14 @@ gameLoop:
 	# call vsync
 	call clear_screen
 
-	# Check if a key has been pressed
-	call readKeyCode
-	cmp $0, %rax
-	mov %rax, %rdi
-	call ps2_translate_scancode
-	mov %rax, %rdi
-	call render_player
-	call render_enemies_big
-	call render_player_cannon
+	# stages
+	call render_stage0_title_screen
+	call render_stage0_intro
 	call render_stage1
+	call render_leaderboard
 
 	# increment the game timer at 60Hz
 	incq (GAME_TIMER)
-	cmpq $600, (GAME_TIMER)
-	jl 3f
-	movq $0, (GAME_TIMER)
-3:
 
 	SUB_EPILOGUE
 	ret

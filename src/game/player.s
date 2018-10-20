@@ -48,7 +48,7 @@ chk_move_right:
     je chk_move_done                    # min(VGA_WIDTH - PLAYER_WIDTH, x)
     addq $PLAYER_MOVE_UNIT, (PLAYER_X)
 chk_move_fire:
-    cmp $'e', %di
+    cmp $' ', %di
     jne chk_move_done
     call fire_player_cannon
 chk_move_done:
