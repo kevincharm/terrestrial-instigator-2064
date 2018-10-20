@@ -31,6 +31,8 @@ GAME_TIMER: .quad 0
 GAME_STAGE: .quad 0
 .global GAME_SCORE
 GAME_SCORE: .quad 0
+.global HIGH_SCORE
+HIGH_SCORE: .quad 0
 
 .section .game.text
 
@@ -57,6 +59,7 @@ gameLoop:
 	call render_stage0_title_screen
 	call render_stage0_intro
 	call render_stage1
+	call render_leaderboard
 
 	# increment the game timer at 60Hz
 	incq (GAME_TIMER)

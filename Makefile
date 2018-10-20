@@ -40,6 +40,7 @@ KERNEL_SRCS=\
 	src/game/script/stage0_title_screen.s \
 	src/game/script/stage0_z_intro.s \
 	src/game/script/stage1.s \
+	src/game/script/stage1_leaderboard.s \
 	src/game/game.s \
 	src/kernel/*.s
 
